@@ -1,16 +1,86 @@
-# React + Vite
+# Problem Hunter AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Problem Hunter AI is an AI-powered platform that helps communities report, analyze, and prioritize local problems while generating actionable solutions and implementation roadmaps.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* Report local community problems
+* Categorize and prioritize issues
+* Dark/Light mode support
+* Responsive design
+* REST API backend
+* Search, update and delete problems
 
-## React Compiler
+## Backend API Endpoints
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Get All Problemssss
 
-## Expanding the ESLint configuration
+GET /api/problems
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Get Single Problem
+
+GET /api/problems/:id
+
+### Create Problem
+
+POST /api/problems
+
+### Update Problem
+
+PUT /api/problems/:id
+
+### Delete Problem
+
+DELETE /api/problems/:id
+
+### Search Problems
+
+GET /api/problems/search/:keyword
+
+## How to Run Backend Locally
+
+### 1. Navigate to Backend Folder
+
+```bash
+cd backend
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Create Environment File
+
+Create a `.env` file:
+
+```env
+PORT=5000
+```
+
+### 4. Start Development Server
+
+```bash
+npm run dev
+```
+
+### 5. Server URL
+
+```text
+http://localhost:5000
+```
+
+## Technologies Used
+
+* React
+* Vite
+* Node.js
+* Express.js
+* Thunder Client
+* JavaScript
+* CSS
+
+## Author
+
+Utkarsh Kumar Dubey
