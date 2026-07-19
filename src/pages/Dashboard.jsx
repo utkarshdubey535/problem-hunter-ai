@@ -11,6 +11,9 @@ function Dashboard() {
   const [image, setImage] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [aiResult, setAiResult] = useState("");
+const [loading, setLoading] = useState(false);
+const [aiProblem, setAiProblem] = useState("");
 
   const handleImageChange = (e) => {
   const file = e.target.files[0];
@@ -100,6 +103,40 @@ const editProblem = (index) => {
   setImage(problems[index].image);
   setEditIndex(index);
 }; 
+const analyzeProblem = async () => {
+  if (!aiProblem.trim()) {
+    alert("Please enter a problem description.");
+    return;
+  }
+
+  setLoading(true);
+  setAiResult("");
+
+  try {
+    const response = await fetch("http://localhost:5000/api/ai/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        problem: aiProblem,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setAiResult(data.analysis);
+    } else {
+      setAiResult("AI Analysis Failed");
+    }
+  } catch (error) {
+    console.error(error);
+    setAiResult("Server Error");
+  }
+
+  setLoading(false);
+};
 
   useEffect(() => {
     localStorage.setItem("problems", JSON.stringify(problems));
@@ -205,6 +242,39 @@ const editProblem = (index) => {
         <option value="Medium">Medium</option>
         <option value="Low">Low</option>
       </select>
+      <div className="problem-card">
+  <h2>🤖 AI Problem Analyzer</h2>
+
+  <textarea
+    rows="5"
+    placeholder="Describe a community problem..."
+    value={aiProblem}
+    onChange={(e) => setAiProblem(e.target.value)}
+  />
+
+  <button
+    onClick={analyzeProblem}
+    className="status-btn"
+    style={{ marginTop: "10px" }}
+  >
+    {loading ? "Analyzing..." : "Analyze with AI"}
+  </button>
+
+  {aiResult && (
+    <div
+      style={{
+        marginTop: "20px",
+        padding: "15px",
+        borderRadius: "10px",
+        background: "#f4f6ff",
+        whiteSpace: "pre-wrap",
+      }}
+    >
+      <h3>AI Analysis</h3>
+      <p>{aiResult}</p>
+    </div>
+  )}
+</div>
 
       <h2>Submitted Problems</h2>
 

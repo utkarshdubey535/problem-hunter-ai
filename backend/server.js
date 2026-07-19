@@ -5,31 +5,34 @@ const { body, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+const OpenAI = require("openai");
+
 require("dotenv").config();
 
 const app = express();
-// mongoose
-//   .connect(process.env.MONGO_URI)
-//   .then(() => {
-//     console.log("MongoDB Connected");
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });n
+
+const client = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
+
 /*
-mongoose
-  .connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 10000,
-    family: 4
-  })
-  .then(() => {
+(async () => {
+  try {
+    console.log("Connecting...");
+    console.log(process.env.MONGO_URI);
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+    });
+
     console.log("✅ MongoDB Connected");
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error");
+  } catch (err) {
+    console.error("❌ Connection Error:");
     console.error(err);
-  });
-  */
+  }
+})();
+*/
 
 app.use(cors());
 app.use(express.json());
@@ -281,8 +284,59 @@ app.delete("/api/problems/:id", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
+app.post("/api/ai/analyze", async (req, res) => {
+  try {
+    const { problem } = req.body;
+
+    if (!problem) {
+      return res.status(400).json({
+        message: "Problem description is required",
+      });
+    }
+
+    const prompt = `
+You are an AI assistant for Problem Hunter AI.
+
+Analyze the following community problem.
+
+Problem:
+${problem}
+
+Provide:
+1. Problem Category
+2. Severity (Low/Medium/High)
+3. Suggested Solution
+4. Estimated Department Responsible
+
+Return the answer in simple English.
+`;
+
+   const completion = await client.chat.completions.create({
+  model: "google/gemini-2.5-flash",
+  max_tokens: 1000,
+  messages: [
+    {
+      role: "user",
+      content: prompt,
+    },
+  ],
+});
+
+const response = completion.choices[0].message.content;
+    res.json({
+      success: true,
+      analysis: response,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "AI Analysis Failed",
+    });
+  }
+});
 app.listen(PORT, () => {
-  console.log(
-    `Server running on port ${PORT}`
-  );
+  console.log(`Server running on port ${PORT}`);
 });
