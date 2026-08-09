@@ -113,22 +113,25 @@ const analyzeProblem = async () => {
   setAiResult("");
 
   try {
-    const response = await fetch("http://localhost:5000/api/ai/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        problem: aiProblem,
-      }),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/ai/analyze`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          problem: aiProblem,
+        }),
+      }
+    );
 
     const data = await response.json();
 
     if (data.success) {
       setAiResult(data.analysis);
     } else {
-      setAiResult("AI Analysis Failed");
+      setAiResult(data.message || "AI Analysis Failed");
     }
   } catch (error) {
     console.error(error);
